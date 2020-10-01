@@ -13,18 +13,21 @@ namespace Martian
 
         public void MoveForward()
         {
-            rover.position.x--;
+            if (rover.currPosition.x == 0)
+                rover.MakeEdgeMove();
+            else
+                rover.currPosition.x--;
         }
 
         public void TurnLeft()
         {
-            rover.direction = Direction.SOUTH;
+            rover.currDirection = Direction.SOUTH;
             rover.rudderState = rover.southDirection;
         }
 
         public void TurnRight()
         {
-            rover.direction = Direction.NORTH;
+            rover.currDirection = Direction.NORTH;
             rover.rudderState = rover.northDirection;
         }
     }

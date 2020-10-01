@@ -5,13 +5,13 @@ using System.Text;
 
 namespace Martian
 {
-    public class MarsSpace
+    public class Field
     {
         public int width { get; }
         public int height { get; }
-        public ArrayList protectedPoints { get; set; }
+        public List<Point> protectedPoints { get; set; } = new List<Point>();
 
-        public MarsSpace(Point point)
+        public Field(Point point)
         {
             width = point.x;
             height = point.y;

@@ -1,16 +1,17 @@
-﻿using System.Collections;
+﻿using Martian.Exceptions;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Martian
 {
     public class Rover
     {
-        public Point position { get; set; }
-        public Direction direction { get; set; }
+        public Point currPosition { get; set; }
+        public Direction currDirection { get; set; }
         public bool lost { get; set; } = false;
-        private MarsSpace field;
-        internal IRudderState rudderState { get; set; }
-        
+        internal Field field;
+        internal IRudderState rudderState { get; set; }        
 
         internal NorthDirection northDirection;
         internal WestDirection westDirection;
@@ -18,16 +19,16 @@ namespace Martian
         internal SouthDirection southDirection;
 
 
-        public Rover(MarsSpace field, Point startPoint, Direction startDirection)
+        public Rover(Field field, Point startPoint, Direction startDirection)
         {
             this.field = field;
-            position = startPoint;
-            direction = startDirection;
-            CreateRudderStates();
+            currPosition = startPoint;
+            currDirection = startDirection;
+            InitRudderStates();
             SetRudderState();
         }
 
-        private void CreateRudderStates()
+        private void InitRudderStates()
         {
             northDirection = new NorthDirection(this);
             westDirection = new WestDirection(this);
@@ -37,7 +38,7 @@ namespace Martian
 
         private void SetRudderState()
         {
-            switch (direction)
+            switch (currDirection)
             {
                 case (Direction.NORTH): 
                     rudderState = northDirection;
@@ -59,8 +60,16 @@ namespace Martian
 
         public void ExecuteCommands(IEnumerable<Command> commands)
         {
-            foreach (Command command in commands)
-                ExecuteCommand(command);
+            try
+            {
+                foreach (Command command in commands)
+                    ExecuteCommand(command);
+            }
+            catch (RoverLostException)
+            {
+                this.lost = true;
+                field.protectedPoints.Add(currPosition);
+            }
         }
 
         private void ExecuteCommand(Command command)
@@ -79,11 +88,19 @@ namespace Martian
             }
         }
 
+        internal void MakeEdgeMove()
+        {
+            if (field.protectedPoints.Contains(currPosition))
+                return;
+            else
+                throw new RoverLostException();
+        }
+
+
         public override string ToString()
         {
-            string result = position.x + " " + position.y + " " + (char)direction;
-            if (lost)
-                result += " LOST";
+            string result = currPosition.ToString() + " " + (char)currDirection;
+            if (lost) result += " LOST";
 
             return result;
         }

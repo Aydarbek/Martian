@@ -4,9 +4,11 @@ using System.Text;
 
 namespace Martian
 {
-    public enum Direction { 
+    public enum Direction 
+    { 
         NORTH = 'N', 
         EAST = 'E',
         SOUTH = 'S',
-        WEST = 'W' }
+        WEST = 'W' 
+    }
 }
