@@ -8,10 +8,12 @@ namespace Martian
     public class CommandCenter
     {
         internal string fieldParams { get; set; }
-        internal string[] robotLocationParams { get; set; }
-        internal string[] robotCommands { get; set; }
+        internal List<string> robotLocationParams { get; set; } = new List<string>();
+        internal List<string> robotCommands { get; set; } = new List<string>();
+        internal List<string> operationResults { get; set; } = new List<string>();
+        internal string operationReport { get; set; }
         internal Field martianField { get; private set; }
-        internal List<Robot> martianRobots { get; private set; }
+        internal List<Robot> martianRobots { get; set; }
         internal InputDataHelper dataHelper => InputDataHelper.GetInstance();
 
 
@@ -31,40 +33,49 @@ namespace Martian
         {
             try
             {
-                dataHelper.ProcessInputData(inputData);
-                SetUpEnvironment();
-                PlaceRobots();
+                ProcessInputData(inputData);
+                SetupLocationField();
+                DropOffRobots();
                 ExecuteRobotCommands();
+                PrintOperationReport();
             }
-
-            catch (ValidationException ex)
+            catch(ValidationException ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine("Wrong data format. Validation message: " + ex.Message);
             }
-
-            catch (Exception)
+            catch (Exception e)
             {
-                throw;
+                Console.WriteLine(e.Message);
             }
         }
 
 
-        public void SetUpEnvironment()
+        internal void ProcessInputData(string inputData)
         {
-
+            dataHelper.ProcessInputData(inputData);
         }
 
-        private void ExecuteRobotCommands()
+        internal void SetupLocationField()
+        {
+            martianField = Field.GetField(fieldParams);
+        }
+
+        internal void DropOffRobots()
         {
             throw new NotImplementedException();
         }
 
-        private void PlaceRobots()
+        internal void ExecuteRobotCommands()
         {
             throw new NotImplementedException();
         }
 
 
+        internal void PrintOperationReport()
+        {
+            
+            Console.WriteLine(operationReport);
+        }
 
     }
 }

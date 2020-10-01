@@ -1,5 +1,7 @@
 ﻿using Martian.Exceptions;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Martian
 {
@@ -49,12 +51,12 @@ namespace Martian
             throw new NotImplementedException();
         }
 
-        private string[] GetLocationParams()
+        private List<string> GetLocationParams()
         {
             throw new NotImplementedException();
         }
 
-        private string[] GetRobotInstructions()
+        private List<string> GetRobotInstructions()
         {
             throw new NotImplementedException();
         }
