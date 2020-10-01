@@ -4,6 +4,7 @@ using System.Text;
 using Xunit;
 using Martian;
 using Martian.Exceptions;
+using System.Linq;
 
 namespace Martian.Tests
 {
@@ -18,17 +19,18 @@ namespace Martian.Tests
                 "RFRFRFRF\n" +
                 "3 2 N\n" +
                 "FRRFLLFFRRFLL\n" +
-                "03 W\n" +
+                "0 3 W\n" +
                 "LLFFFLFLFL";
 
             CommandCenter center = CommandCenter.GetInstance();
-            InputDataHelper dataHelper = InputDataHelper.GetInstance();
 
             center.ProcessInputData(inputData);
 
             Assert.Equal("5 3", center.fieldParams);
-            Assert.Equal("1 1 E", center.robotLocationParams[0]); Assert.Equal("3 2 N", center.robotLocationParams[1]);
-            Assert.Equal("FRRFLLFFRRFLL", center.robotCommands[1]); Assert.Equal("LLFFFLFLFL", center.robotCommands[2]);
+            Assert.Equal("1 1 E", center.robotParams.ElementAt(0).Key); 
+            Assert.Equal("3 2 N", center.robotParams.ElementAt(1).Key);
+            Assert.Equal("FRRFLLFFRRFLL", center.robotParams.ElementAt(1).Value); 
+            Assert.Equal("LLFFFLFLFL", center.robotParams.ElementAt(2).Value);
         }
 
         [Fact] 
@@ -39,8 +41,7 @@ namespace Martian.Tests
                 "1 1 E\n" +
                 "RFRFINRFRF";
 
-            CommandCenter center = CommandCenter.GetInstance();
-            InputDataHelper dataHelper = InputDataHelper.GetInstance();
+            CommandCenter center = new CommandCenter();
 
             var ex = Assert.Throws<ValidationException>(() => center.ProcessInputData(inputData));
             Assert.Equal("Wrong command instructions. Only L, R, F commands allowed!", ex.Message);
@@ -49,7 +50,7 @@ namespace Martian.Tests
         [Fact]
         public void SetUpEnvironmentCreatesLocationField()
         {
-            CommandCenter center = CommandCenter.GetInstance();
+            CommandCenter center = new CommandCenter();
             center.fieldParams = "5 3";
 
             center.SetupLocationField();
@@ -61,27 +62,26 @@ namespace Martian.Tests
         [Fact]
         public void DropOffRobotsStoresRobotsToList()
         {
-            CommandCenter center = CommandCenter.GetInstance();
-            center.robotLocationParams = new List<string> { "1 1 E", "3 2 N", "0 3 W" };
+            CommandCenter center = new CommandCenter();
+            center.robotParams = new Dictionary<string, string>();
+            center.robotParams.Add("1 1 E", "RFRFRFRF");
+            center.robotParams.Add("3 2 N", "FRRFLLFFRRFLL");
 
             center.DropOffRobots();
 
-            Assert.Equal(3, center.martianRobots.Count);
+            Assert.Equal(2, center.martianRobots.Count);
             Assert.Equal(Direction.NORTH, center.martianRobots[1].currDirection);
         }
 
         [Fact]
         public void ExecuteRobotCommands()
         {
-            CommandCenter center = CommandCenter.GetInstance();
+            CommandCenter center = new CommandCenter();
             Field field = new Field(new Point(5, 3));
-            center.martianRobots = new List<Robot>
-            {
-                new Robot(field, new Point(1, 1), Direction.EAST),
-                new Robot(field, new Point(3, 2), Direction.NORTH),
-                new Robot(field, new Point(0, 3), Direction.WEST)
-            };
-            center.robotCommands = new List<string> { "RFRFRFRF", "FRRFLLFFRRFLL", "LLFFFLFLFL" };
+            center.martianRobots.Add(new Robot(field, new Point(1, 1), Direction.EAST));
+            center.martianRobots.Add(new Robot(field, new Point(3, 2), Direction.NORTH));
+            center.robotParams.Add("1 1 E", "RFRFRFRF");
+            center.robotParams.Add("3 2 N", "FRRFLLFFRRFLL");
 
             center.ExecuteRobotCommands();
 
@@ -92,12 +92,12 @@ namespace Martian.Tests
         [Fact]
         public void PrintOperationReportBuildsCorrectOutput()
         {
-            CommandCenter center = CommandCenter.GetInstance();
+            CommandCenter center = new CommandCenter();
             center.operationResults = new List<string> { "1 1 E", "3 3 N LOST", "2 3 S" };
 
             center.PrintOperationReport();
 
-            Assert.Equal("1 1 E\n3 3 N LOST\n2 3 S", center.operationReport);
+            Assert.Equal("1 1 E\r\n3 3 N LOST\r\n2 3 S\r\n", center.operationReport);
         }
 
 

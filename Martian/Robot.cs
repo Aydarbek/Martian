@@ -78,7 +78,7 @@ namespace Martian
             }
         }
 
-        public void ExecuteCommands(IEnumerable<char> commands)
+        public void ExecuteCommands(string commands)
         {
             try
             {

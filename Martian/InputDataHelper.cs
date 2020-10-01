@@ -10,18 +10,13 @@ namespace Martian
         string inputData;
         string[] inputLines;
         string validationMessage;
+        CommandCenter commandCenter;
 
-        CommandCenter commandCenter => CommandCenter.GetInstance();
 
-        internal static void ValidateInputData(string inputData)
+        internal InputDataHelper(CommandCenter commandCenter) 
         {
-            throw new NotImplementedException();
-        }
-
-        internal static InputDataHelper GetInstance()
-        {
-            throw new NotImplementedException();
-        }
+            this.commandCenter = commandCenter;
+        }       
 
         internal void ProcessInputData(string inputData)
         {
@@ -36,29 +31,41 @@ namespace Martian
 
         private bool ValidateInputData()
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         private void SetUpCommandCenterData()
         {
+            inputLines = inputData.Split('\n');
             commandCenter.fieldParams = GetFieldParams();
-            commandCenter.robotLocationParams = GetLocationParams();
-            commandCenter.robotCommands = GetRobotInstructions();
+            commandCenter.robotParams = GetRobotParams();
         }
 
         private string GetFieldParams()
         {
-            throw new NotImplementedException();
+            return inputLines[0];
         }
 
-        private List<string> GetLocationParams()
+        private Dictionary<string, string> GetRobotParams()
         {
-            throw new NotImplementedException();
+            Dictionary<string, string> resultParams = new Dictionary<string, string>();
+
+            for (int i = 1; i < inputLines.Length - 1; i = i + 2)
+            {
+                string locationParam = inputLines[i];
+                string commandParam = inputLines[i + 1];
+                resultParams.Add(locationParam, commandParam);
+            }
+
+            if (!ValidateRobotParams(resultParams))
+                throw new ValidationException(validationMessage);
+                
+            return resultParams;
         }
 
-        private List<string> GetRobotInstructions()
+        private bool ValidateRobotParams(Dictionary<string, string> resultParams)
         {
-            throw new NotImplementedException();
+            return true;
         }
     }
 }

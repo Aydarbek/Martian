@@ -23,6 +23,18 @@ namespace Martian.Tests
         }
 
         [Fact]
+        public void RobotExecuteCommandsFromStringCorrectly()
+        {
+            Field field = new Field(new Point(5, 3));
+            Robot robot = Robot.GetRobot(field, "3 2 N");
+            string commands = "FRRFLLFFRRFLL";
+
+            robot.ExecuteCommands(commands);
+
+            Assert.Equal("3 3 N LOST", robot.ToString());
+        }
+
+        [Fact]
         public void RobotCheckingAllRudderDirections()
         {
             Field field = new Field(new Point(6, 6));
@@ -80,5 +92,6 @@ namespace Martian.Tests
             Assert.False(robot.lost);
             Assert.Equal("2 5 N", robot.ToString());
         }
+
     }
 }

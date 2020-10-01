@@ -8,18 +8,20 @@ namespace Martian
     public class CommandCenter
     {
         internal string fieldParams { get; set; }
-        internal List<string> robotLocationParams { get; set; } = new List<string>();
-        internal List<string> robotCommands { get; set; } = new List<string>();
+        internal Dictionary<string, string> robotParams { get; set; } = new Dictionary<string, string>();
         internal List<string> operationResults { get; set; } = new List<string>();
         internal string operationReport { get; set; }
         internal Field martianField { get; private set; }
-        internal List<Robot> martianRobots { get; set; }
-        internal InputDataHelper dataHelper => InputDataHelper.GetInstance();
 
+        internal List<Robot> martianRobots { get; set; } = new List<Robot>();
+        internal InputDataHelper dataHelper;
 
-        private static CommandCenter commandCenter;
+        internal static CommandCenter commandCenter;
 
-        private CommandCenter() { }
+        internal CommandCenter() 
+        {
+            dataHelper = new InputDataHelper(this); 
+        }
 
         public static CommandCenter GetInstance()
         {
@@ -62,18 +64,28 @@ namespace Martian
 
         internal void DropOffRobots()
         {
-            throw new NotImplementedException();
+            foreach (string locationParams in robotParams.Keys)
+                martianRobots.Add(Robot.GetRobot(martianField, locationParams));
         }
 
         internal void ExecuteRobotCommands()
         {
-            throw new NotImplementedException();
+            foreach (Robot robot in martianRobots)
+            {
+                robot.ExecuteCommands(robotParams[robot.ToString()]);
+                operationResults.Add(robot.ToString());
+            }
         }
 
 
         internal void PrintOperationReport()
         {
-            
+            StringBuilder result = new StringBuilder();
+            foreach (string resultItem in operationResults)
+                result.AppendLine(resultItem);
+
+            operationReport = result.ToString();
+
             Console.WriteLine(operationReport);
         }
 
