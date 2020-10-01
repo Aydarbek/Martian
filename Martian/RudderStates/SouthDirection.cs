@@ -6,31 +6,32 @@ namespace Martian
 {
     internal class SouthDirection : IRudderState
     {
-        Rover rover;
+        Robot robot;
 
-        internal SouthDirection(Rover rover)
+        internal SouthDirection(Robot robot)
         {
-            this.rover = rover;
+            this.robot = robot;
         }
 
         public void MoveForward()
         {
-            if (rover.currPosition.y == 0)
-                rover.MakeEdgeMove();
+            if (robot.currPosition.y == 0)
+                robot.MakeEdgeMove();
             else
-                rover.currPosition.y--;
+                robot.currPosition.y--;
         }
 
         public void TurnLeft()
         {
-            rover.currDirection = Direction.EAST;
-            rover.rudderState = rover.eastDirection;
+            robot.currDirection = Direction.EAST;
+            robot.rudderState = robot.eastDirection;
         }
 
         public void TurnRight()
         {
-            rover.currDirection = Direction.WEST;
-            rover.rudderState = rover.westDirection;
+            robot.currDirection = Direction.WEST;
+            robot.rudderState = robot.westDirection;
         }
+
     }
 }

@@ -25,5 +25,10 @@ namespace Martian
         {
             return x + " " + y;
         }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }

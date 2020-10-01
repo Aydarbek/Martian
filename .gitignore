@@ -2,3 +2,5 @@ Martian/bin
 Martian/obj
 .vs
 Martian/.vs
+Martian.Tests/bin
+Martian.Tests/obj

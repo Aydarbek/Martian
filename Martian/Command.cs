@@ -6,6 +6,10 @@ namespace Martian
 {
     public enum Command
     {
-        TURN_RIGHT, TURN_LEFT, FORWARD
+        TURN_LEFT = 'L',
+        TURN_RIGHT = 'R',
+        FORWARD = 'F',
+        BACKWARD = 'B',
+        TURN_AROUND = 'T'
     }
 }
