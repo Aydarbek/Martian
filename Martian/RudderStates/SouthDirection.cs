@@ -15,17 +15,19 @@ namespace Martian
 
         public void MoveForward()
         {
-            throw new NotImplementedException();
+            rover.position.y--;
         }
 
         public void TurnLeft()
         {
-            throw new NotImplementedException();
+            rover.direction = Direction.EAST;
+            rover.rudderState = rover.eastDirection;
         }
 
         public void TurnRight()
         {
-            throw new NotImplementedException();
+            rover.direction = Direction.WEST;
+            rover.rudderState = rover.westDirection;
         }
     }
 }

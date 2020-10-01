@@ -1,5 +1,4 @@
-﻿using Martian.Engine;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -21,13 +20,13 @@ namespace Martian
 
         public void TurnLeft()
         {
-            rover.direction = Direction.W;
+            rover.direction = Direction.WEST;
             rover.rudderState = rover.westDirection;
         }
 
         public void TurnRight()
         {
-            rover.direction = Direction.E;
+            rover.direction = Direction.EAST;
             rover.rudderState = rover.eastDirection;
         }
     }

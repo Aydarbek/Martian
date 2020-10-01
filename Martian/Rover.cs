@@ -1,7 +1,5 @@
-﻿using Martian.Engine;
-using System;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Martian
 {
@@ -10,6 +8,7 @@ namespace Martian
         public Point position { get; set; }
         public Direction direction { get; set; }
         public bool lost { get; set; } = false;
+        private MarsSpace field;
         internal IRudderState rudderState { get; set; }
         
 
@@ -19,8 +18,9 @@ namespace Martian
         internal SouthDirection southDirection;
 
 
-        public Rover(Point startPoint, Direction startDirection)
+        public Rover(MarsSpace field, Point startPoint, Direction startDirection)
         {
+            this.field = field;
             position = startPoint;
             direction = startDirection;
             CreateRudderStates();
@@ -39,16 +39,16 @@ namespace Martian
         {
             switch (direction)
             {
-                case (Direction.N): 
+                case (Direction.NORTH): 
                     rudderState = northDirection;
                     break;
-                case (Direction.E):
+                case (Direction.EAST):
                     rudderState = eastDirection;
                     break;
-                case (Direction.S):
+                case (Direction.SOUTH):
                     rudderState = southDirection;
                     break;
-                case (Direction.W):
+                case (Direction.WEST):
                     rudderState = westDirection;
                     break;
                 default:
@@ -57,9 +57,31 @@ namespace Martian
             }
         }
 
+        public void ExecuteCommands(IEnumerable<Command> commands)
+        {
+            foreach (Command command in commands)
+                ExecuteCommand(command);
+        }
+
+        private void ExecuteCommand(Command command)
+        {
+            switch (command)
+            {
+                case (Command.FORWARD):
+                    rudderState.MoveForward();
+                    break;
+                case (Command.TURN_LEFT):
+                    rudderState.TurnLeft();
+                    break;
+                case (Command.TURN_RIGHT):
+                    rudderState.TurnRight();
+                    break;
+            }
+        }
+
         public override string ToString()
         {
-            string result = position.x + " " + position.y + " " + direction.ToString();
+            string result = position.x + " " + position.y + " " + (char)direction;
             if (lost)
                 result += " LOST";
 
