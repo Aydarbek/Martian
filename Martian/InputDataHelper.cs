@@ -2,14 +2,23 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Martian
 {
     public class InputDataHelper
     {
-        string[] inputLines;
-        string validationMessage;
+        const string fieldPattern = "^\\d{1,2} \\d{1,2}$";
+        const string robotLocationPattern = "^\\d{1,2} \\d{1,2} [N,W,E,S]$";
+        const string robotCommandsPatern = "^[F,L,R]*$";
+        
         CommandCenter commandCenter;
+
+        string[] inputLines;
+        string fieldParams;
+        string validationMessage;
+        int fieldWidth;
+        int fieldHeight;
 
 
         internal InputDataHelper(CommandCenter commandCenter) 
@@ -45,9 +54,36 @@ namespace Martian
             commandCenter.robotParams = GetRobotParams();
         }
 
+
         private string GetFieldParams()
         {
-            return inputLines[0];
+            fieldParams = inputLines[0];
+            
+            if (!ValidateFieldParams())
+                throw new ValidationException(validationMessage);
+
+            return fieldParams;
+        }
+
+        private bool ValidateFieldParams()
+        {
+            if(!Regex.IsMatch(fieldParams, fieldPattern)) 
+            {
+                validationMessage = "Wrong format of field parameters string. Example: \"5 3\"";
+                return false;
+            }
+
+            string[] splitFieldParams = fieldParams.Split(' ');
+            fieldWidth = Int32.Parse(splitFieldParams[0]);
+            fieldHeight = Int32.Parse(splitFieldParams[1]);
+
+            if (fieldWidth > 50 || fieldHeight > 50)
+            {
+                validationMessage = "Field width and height cannot be more than 50";
+                return false;
+            }
+
+            return true;
         }
 
         private Dictionary<string, string> GetRobotParams()
@@ -69,7 +105,49 @@ namespace Martian
 
         private bool ValidateRobotParams(Dictionary<string, string> resultParams)
         {
+            return ValidateRobotLocationParams(resultParams) && ValidateRobotCommands(resultParams);
+        }
+
+        private bool ValidateRobotLocationParams(Dictionary<string, string> resultParams)
+        {
+            int x;
+            int y;
+            string[] splitLocationParams;
+
+            foreach (string locationParams in resultParams.Keys)
+            {
+                if (!Regex.IsMatch(locationParams, robotLocationPattern))
+                {
+                    validationMessage = "Wrong format of robot location parameters string. Correct format: \"3 2 N\"";
+                    return false;
+                }
+
+                splitLocationParams = locationParams.Split(' ');
+                x = Int32.Parse(splitLocationParams[0]);
+                y = Int32.Parse(splitLocationParams[1]);
+
+                if (x > fieldWidth || y > fieldHeight)
+                {
+                    validationMessage = "Error. Robot input location is outside field.";
+                    return false;
+                }
+            }
+
+
             return true;
         }
+
+        private bool ValidateRobotCommands(Dictionary<string, string> resultParams)
+        {
+            foreach (string robotCommands in resultParams.Values)
+                if(!Regex. IsMatch(robotCommands, robotCommandsPatern))
+                {
+                    validationMessage = "Wrong command instructions format. Only L, R, F commands allowed!";
+                    return false;
+                }
+
+            return true;
+        }
+
     }
 }

@@ -41,7 +41,7 @@ namespace Martian.Tests
             InputDataHelper dataHelper = new InputDataHelper(new CommandCenter());
 
             Exception ex = Assert.Throws<ValidationException>(() => dataHelper.ProcessInputData(inputData));
-            Assert.Equal("Field size cannot be more than 50", ex.Message);
+            Assert.Equal("Field width and height cannot be more than 50", ex.Message);
         }
 
         [Fact]
@@ -96,6 +96,20 @@ namespace Martian.Tests
 
             Exception ex = Assert.Throws<ValidationException>(() => dataHelper.ProcessInputData(inputData));
             Assert.Equal("Wrong command instructions format. Only L, R, F commands allowed!", ex.Message);
+        }
+
+        [Fact]
+        public void RobotInputLocationOutsideFieldRaisesException()
+        {
+            string inputData =
+                "5 3\n" +
+                "10 1 E\n" +
+                "RFRFRFRF\n";
+
+            InputDataHelper dataHelper = new InputDataHelper(new CommandCenter());
+
+            Exception ex = Assert.Throws<ValidationException>(() => dataHelper.ProcessInputData(inputData));
+            Assert.Equal("Error. Robot input location is outside field.", ex.Message);
         }
     }
 }

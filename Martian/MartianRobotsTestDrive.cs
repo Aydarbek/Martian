@@ -6,12 +6,12 @@ namespace Martian
 {    
     class MartianRobotsTestDrive
     {
-        const string inputData =
-            "5 3\n" +
+        static string inputData =
+            "5 55\n" +
             "1 1 E\n" +
             "RFRFRFRF\n" +
             "3 2 N\n" +
-            "FRRFLLFFRRFLL\n" +
+            "FRRFLLFFR786qRFLL\n" +
             "0 3 W\n" +
             "LLFFFLFLFL";
 
