@@ -42,7 +42,7 @@ namespace Martian
             }
             catch(ValidationException ex)
             {
-                Console.WriteLine("Wrong data format. Validation message: " + ex.Message);
+                Console.WriteLine("Wrong data format!\n Validation message: " + ex.Message);
             }
             catch (Exception e)
             {

@@ -44,7 +44,7 @@ namespace Martian.Tests
             CommandCenter center = new CommandCenter();
 
             var ex = Assert.Throws<ValidationException>(() => center.ProcessInputData(inputData));
-            Assert.Equal("Wrong command instructions format. Only L, R, F commands allowed!", ex.Message);
+            Assert.Equal("Wrong command instructions format: \"RFRFINRFRF\".\n Only L, R, F commands allowed!", ex.Message);
         }
 
         [Fact]

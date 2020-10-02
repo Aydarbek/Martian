@@ -10,12 +10,12 @@ namespace Martian
 {
     public class Robot
     {
-        public Point currPosition { get; set; }
-        public Direction currDirection { get; set; }
-        public bool lost { get; set; } = false;
-        internal IRudderState rudderState { get; set; }
         internal Field field;
+        internal Point currPosition { get; set; }
+        internal Direction currDirection { get; set; }
+        internal bool lost { get; set; } = false;
 
+        internal IRudderState rudderState { get; set; }
         internal NorthDirection northDirection;
         internal WestDirection westDirection;
         internal EastDirection eastDirection;
@@ -27,8 +27,17 @@ namespace Martian
             this.field = field;
             currPosition = startPoint;
             currDirection = startDirection;
-            InitRudderStates();
-            SetRudderState();
+            InitRudderDirections();
+            SetRudderDirection();
+        }
+
+
+        public override string ToString()
+        {
+            string result = currPosition.ToString() + " " + (char)currDirection;
+            if (lost) result += " LOST";
+
+            return result;
         }
 
         public static Robot GetRobot(Field field, string initParams)
@@ -48,7 +57,7 @@ namespace Martian
             }
         }
 
-        private void InitRudderStates()
+        private void InitRudderDirections()
         {
             northDirection = new NorthDirection(this);
             westDirection = new WestDirection(this);
@@ -56,7 +65,7 @@ namespace Martian
             southDirection = new SouthDirection(this);
         }
 
-        private void SetRudderState()
+        private void SetRudderDirection()
         {
             switch (currDirection)
             {
@@ -135,13 +144,5 @@ namespace Martian
                 throw new RobotLostException();
         }
 
-
-        public override string ToString()
-        {
-            string result = currPosition.ToString() + " " + (char)currDirection;
-            if (lost) result += " LOST";
-
-            return result;
-        }
     }    
 }

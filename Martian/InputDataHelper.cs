@@ -15,10 +15,13 @@ namespace Martian
         CommandCenter commandCenter;
 
         string[] inputLines;
+        string[] splitParams;
         string fieldParams;
         string validationMessage;
         int fieldWidth;
         int fieldHeight;
+        int locationX;
+        int locationY;
 
 
         internal InputDataHelper(CommandCenter commandCenter) 
@@ -67,23 +70,40 @@ namespace Martian
 
         private bool ValidateFieldParams()
         {
-            if(!Regex.IsMatch(fieldParams, fieldPattern)) 
-            {
-                validationMessage = "Wrong format of field parameters string. Example: \"5 3\"";
-                return false;
-            }
+            return ValidateFieldParamsFormat() && 
+                   ValidateFieldSize();
+        }
 
-            string[] splitFieldParams = fieldParams.Split(' ');
-            fieldWidth = Int32.Parse(splitFieldParams[0]);
-            fieldHeight = Int32.Parse(splitFieldParams[1]);
-
-            if (fieldWidth > 50 || fieldHeight > 50)
+        private bool ValidateFieldParamsFormat()
+        {
+            if (!Regex.IsMatch(fieldParams, fieldPattern))
             {
-                validationMessage = "Field width and height cannot be more than 50";
+                validationMessage = String.Format("Wrong format of field parameters string: \"{0}\".\n Example: \"5 3\"", fieldParams);
+
                 return false;
             }
 
             return true;
+        }
+
+        private bool ValidateFieldSize()
+        {
+            ReadFieldParameters();
+
+            if (fieldWidth > 50 || fieldHeight > 50)
+            {
+                validationMessage = String.Format("Field width ({0}) or height ({1}) cannot be more than 50", fieldWidth, fieldHeight);
+                return false;
+            }
+
+            return true;
+        }
+
+        private void ReadFieldParameters()
+        {
+            splitParams = fieldParams.Split(' ');
+            fieldWidth = Int32.Parse(splitParams[0]);
+            fieldHeight = Int32.Parse(splitParams[1]);
         }
 
         private Dictionary<string, string> GetRobotParams()
@@ -91,11 +111,7 @@ namespace Martian
             Dictionary<string, string> resultParams = new Dictionary<string, string>();
 
             for (int i = 1; i < inputLines.Length - 1; i = i + 2)
-            {
-                string locationParam = inputLines[i];
-                string commandParam = inputLines[i + 1];
-                resultParams.Add(locationParam, commandParam);
-            }
+                resultParams.Add(inputLines[i], inputLines[i + 1]);
 
             if (!ValidateRobotParams(resultParams))
                 throw new ValidationException(validationMessage);
@@ -105,34 +121,35 @@ namespace Martian
 
         private bool ValidateRobotParams(Dictionary<string, string> resultParams)
         {
-            return ValidateRobotLocationParams(resultParams) && ValidateRobotCommands(resultParams);
+            return ValidateRobotLocationParams(resultParams) && 
+                   ValidateRobotCommands(resultParams);
         }
 
         private bool ValidateRobotLocationParams(Dictionary<string, string> resultParams)
         {
-            int x;
-            int y;
-            string[] splitLocationParams;
-
             foreach (string locationParams in resultParams.Keys)
             {
                 if (!Regex.IsMatch(locationParams, robotLocationPattern))
                 {
-                    validationMessage = "Wrong format of robot location parameters string. Correct format: \"3 2 N\"";
+                    validationMessage = String.Format
+                        ("Wrong format of robot location parameters string: \"{0}\".\n Correct format: \"3 2 N\"", locationParams);
+                    
                     return false;
                 }
 
-                splitLocationParams = locationParams.Split(' ');
-                x = Int32.Parse(splitLocationParams[0]);
-                y = Int32.Parse(splitLocationParams[1]);
+                splitParams = locationParams.Split(' ');
+                locationX = Int32.Parse(splitParams[0]);
+                locationY = Int32.Parse(splitParams[1]);
 
-                if (x > fieldWidth || y > fieldHeight)
+                if (locationX > fieldWidth ||
+                    locationY > fieldHeight)
                 {
-                    validationMessage = "Error. Robot input location is outside field.";
+                    validationMessage = String.Format
+                        ("Error. Robot input location ({0} {1}) is outside field bounds ({2} {3}).",
+                        locationX, locationY, fieldWidth, fieldHeight);
                     return false;
                 }
             }
-
 
             return true;
         }
@@ -142,7 +159,8 @@ namespace Martian
             foreach (string robotCommands in resultParams.Values)
                 if(!Regex. IsMatch(robotCommands, robotCommandsPatern))
                 {
-                    validationMessage = "Wrong command instructions format. Only L, R, F commands allowed!";
+                    validationMessage = String.Format
+                        ("Wrong command instructions format: \"{0}\".\n Only L, R, F commands allowed!", robotCommands);
                     return false;
                 }
 
