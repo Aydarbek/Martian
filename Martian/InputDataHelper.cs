@@ -7,7 +7,6 @@ namespace Martian
 {
     public class InputDataHelper
     {
-        string inputData;
         string[] inputLines;
         string validationMessage;
         CommandCenter commandCenter;
@@ -20,23 +19,28 @@ namespace Martian
 
         internal void ProcessInputData(string inputData)
         {
-            this.inputData = inputData;
-
+            inputLines = inputData.Split('\n');
+            
             if (ValidateInputData())
                 SetUpCommandCenterData();
-
             else
                 throw new ValidationException(validationMessage);
         }
 
         private bool ValidateInputData()
         {
+            foreach(string line in inputLines)
+                if (line.Length >= 100)
+                {
+                    validationMessage = "Input data string lenght must be less that 100";
+                    return false;
+                }
+
             return true;
         }
 
         private void SetUpCommandCenterData()
         {
-            inputLines = inputData.Split('\n');
             commandCenter.fieldParams = GetFieldParams();
             commandCenter.robotParams = GetRobotParams();
         }

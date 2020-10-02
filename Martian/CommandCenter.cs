@@ -12,7 +12,6 @@ namespace Martian
         internal List<string> operationResults { get; set; } = new List<string>();
         internal string operationReport { get; set; }
         internal Field martianField { get; private set; }
-
         internal List<Robot> martianRobots { get; set; } = new List<Robot>();
         internal InputDataHelper dataHelper;
 
